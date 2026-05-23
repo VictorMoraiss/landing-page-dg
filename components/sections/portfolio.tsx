@@ -16,9 +16,9 @@ const portfolioImages = [
     position: "object-[45%_80%]",
   },
   {
-    src: "branca-de-neve.jpeg",
+    src: "branca-neve-baloes.jpeg",
     alt: "festa de 1 aninho com branca de neve",
-    position: "object-[30%_75%]",
+    position: "object-[55%_70%]",
   },
   {
     src: "60-30-anos.jpeg",
