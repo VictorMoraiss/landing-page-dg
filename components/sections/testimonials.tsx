@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 
 const testimonials = [
   {
@@ -26,62 +26,119 @@ function StarIcon() {
 }
 
 export function Testimonials() {
-  const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 }
-    )
+    let ctx: any
+    const initGSAP = async () => {
+      const { gsap } = await import("gsap")
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger")
+      gsap.registerPlugin(ScrollTrigger)
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
+      ctx = gsap.context(() => {
+        // Header
+        gsap.fromTo(
+          ".testimonials-header",
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: ".testimonials-header",
+              start: "top 85%",
+            },
+          }
+        )
+
+        // Quote marks animate separately — scale in
+        gsap.fromTo(
+          ".quote-mark",
+          { opacity: 0, scale: 0.5 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.5,
+            stagger: 0.15,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+              trigger: ".testimonial-card",
+              start: "top 85%",
+            },
+          }
+        )
+
+        // Cards fade in with slight upward movement
+        gsap.fromTo(
+          ".testimonial-card",
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.18,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: ".testimonial-card",
+              start: "top 85%",
+            },
+          }
+        )
+
+        // Stars animate after cards
+        gsap.fromTo(
+          ".star-row",
+          { opacity: 0, x: -10 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 0.5,
+            stagger: 0.15,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ".testimonial-card",
+              start: "top 80%",
+            },
+          }
+        )
+      }, sectionRef)
     }
 
-    return () => observer.disconnect()
+    initGSAP()
+    return () => ctx?.revert()
   }, [])
 
   return (
     <section ref={sectionRef} className="bg-blush-soft py-20 md:py-32">
       <div className="container mx-auto px-6">
+
         {/* Header */}
-        <div className={`text-center mb-16 fade-up ${isVisible ? "visible" : ""}`}>
+        <div className="testimonials-header text-center mb-16" style={{ opacity: 0 }}>
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-dark">
             O que nossos clientes <em className="italic">dizem</em>
           </h2>
         </div>
 
-        {/* Testimonials Grid */}
+        {/* Cards */}
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className={`fade-up ${isVisible ? "visible" : ""}`}
-              style={{ animationDelay: `${0.1 + index * 0.15}s` }}
+              className="testimonial-card"
+              style={{ opacity: 0 }}
             >
               <div className="bg-white p-8 card-lift h-full">
-                {/* Quote mark */}
-                <span className="font-serif text-6xl text-blush leading-none block -mb-4">
+                <span className="quote-mark font-serif text-6xl text-blush leading-none block -mb-4" style={{ opacity: 0 }}>
                   &ldquo;
                 </span>
-                
-                {/* Text */}
                 <p className="font-body text-muted-foreground italic leading-relaxed mb-6">
                   {testimonial.text}
                 </p>
-                
-                {/* Name */}
                 <p className="font-body text-xs text-wine tracking-[0.15em] uppercase mb-3">
                   {testimonial.name}
                 </p>
-                
-                {/* Stars */}
-                <div className="flex gap-1">
+                <div className="star-row flex gap-1" style={{ opacity: 0 }}>
                   {[...Array(5)].map((_, i) => (
                     <StarIcon key={i} />
                   ))}
@@ -94,3 +151,4 @@ export function Testimonials() {
     </section>
   )
 }
+
