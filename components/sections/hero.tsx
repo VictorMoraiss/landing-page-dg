@@ -126,7 +126,11 @@ export function Hero() {
           className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white italic font-bold max-w-4xl leading-tight"
           style={{ perspective: "800px" }}
         >
-          {["Transformamos", "sonhos", "em"].map((word) => (
+          <span className="gsap-word inline-block mr-[0.25em]" style={{ opacity: 0 }}>
+            Transformamos
+          </span>
+          <br />
+          {["sonhos", "em"].map((word) => (
             <span key={word} className="gsap-word inline-block mr-[0.25em]" style={{ opacity: 0 }}>
               {word}
             </span>
